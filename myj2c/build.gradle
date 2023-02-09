@@ -1,0 +1,200 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+    id 'idea'
+    id "com.github.spotbugs" version "5.0.13"
+}
+
+sourceCompatibility = targetCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+spotbugs {
+    toolVersion = '4.7.3'
+}
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'cn.muyang.Main'
+}
+
+def versionFile = file('build/version.properties')
+if (!versionFile.exists()) {
+    versionFile.createNewFile()
+}
+Properties versionProps = new Properties()
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':annotations')
+
+    implementation 'org.ow2.asm:asm:9.4'
+    implementation 'org.ow2.asm:asm-tree:9.4'
+    implementation 'org.ow2.asm:asm-commons:9.4'
+    implementation 'org.ow2.asm:asm-util:9.4'
+
+    implementation 'info.picocli:picocli:4.7.0'
+    //implementation 'commons-codec:commons-codec:1.15'
+    implementation 'org.apache.commons:commons-compress:1.21'
+    /*implementation ('ch.qos.logback:logback-classic:1.3.4'){
+        exclude group: 'org.codehaus.janino'
+        exclude group: 'org.fusesource.jansi'
+        exclude group: 'javax.mail'
+        exclude group: 'javax.activation'
+        exclude group: 'com.sun.mail'
+    }*/
+/*    implementation ("com.intellij:forms_rt:12.1.0"){
+        exclude group: 'jdom'
+        exclude group: 'asm'
+        exclude group: 'com.jgoodies'
+    }*/
+    //implementation("com.github.adedayo.intellij.sdk:forms_rt:142.1")
+    //implementation 'com.fifesoft:rsyntaxtextarea:3.3.0'
+    //implementation 'com.formdev:flatlaf:2.6'
+
+    //implementation 'org.apache.tika:tika-core:2.4.1'
+    implementation 'org.tukaani:xz:1.9'
+
+    implementation('com.github.oshi:oshi-core:6.3.1') {
+        exclude group: 'org.slf4j'
+    }
+    implementation("org.simpleframework:simple-xml:2.7.1") {
+        exclude group: 'xpp3'
+        exclude group: 'stax'
+    }
+    implementation 'com.google.code.gson:gson:2.10'
+    //implementation 'org.projectlombok:lombok:1.18.22'
+    //annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    //implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4'
+    //implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.13.4'
+    implementation 'org.slf4j:slf4j-nop:2.0.2'
+    //implementation'ch.qos.logback:logback-classic:1.2.11'
+    /*implementation 'org.apache.logging.log4j:log4j-core:2.8.2'
+     implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.8.2'
+     implementation 'org.apache.logging.log4j:log4j-api:2.8.2'*/
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+}
+
+shadowJar {
+    classifier null
+    //minimize()
+    relocate "oshi", "cn.myj2c.library.oshi"
+    relocate "picocli", "cn.myj2c.library.picocli"
+    relocate "ch.qos", "cn.myj2c.library"
+    //relocate "com.intellij", "cn.myj2c.library"
+    relocate "com.ctc", "cn.myj2c.library"
+    relocate "com.fasterxml", "cn.myj2c.library"
+    //relocate "com.sun", "cn.myj2c.library"
+    relocate "org.apache", "cn.myj2c.library"
+    relocate "org.simpleframework", "cn.myj2c.library"
+    relocate "com.google", "cn.myj2c.library"
+    relocate "org.codehaus", "cn.myj2c.library"
+    relocate "org.objectweb", "cn.myj2c.library"
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+}
+
+assemble.dependsOn(shadowJar)
+
+jar {
+    manifest.attributes("Main-Class": getProperty('mainClass'))
+}
+
+task obfusticate(type: Exec) {
+    commandLine 'java', '-jar', 'allatori/allatori.jar', 'allatori/config.xml'
+}
+
+task obfusticateClean(type: Delete) {
+    delete '.\\build\\libs\\myj2c.jar'
+}
+
+task complete {
+    doLast {
+        println("Launcher has been built")
+    }
+}
+
+obfusticate.dependsOn shadowJar
+obfusticate.mustRunAfter shadowJar
+obfusticateClean.dependsOn obfusticate
+obfusticateClean.mustRunAfter obfusticate
+
+complete.dependsOn shadowJar
+complete.dependsOn obfusticate
+complete.mustRunAfter obfusticate
+
+task updateVersion {
+    versionProps.load(new FileInputStream(versionFile))
+    def date = new Date().format("yyyy.MMdd", TimeZone.getTimeZone("GMT+08:00"));
+    def buildNum = 1
+    if (versionProps['build_date'] == null) {
+        versionProps['build_date'] = date
+    } else if (versionProps['build_date'] != date) {
+        versionProps['build_date'] = date
+        versionProps['build_number'] = "00"
+    }
+    if (versionProps['build_number'] == null) {
+        versionProps['build_number'] = "0" + buildNum.toString()
+    } else {
+        buildNum = versionProps['build_number'].toInteger()
+        buildNum++
+        if (buildNum <= 9) {
+            versionProps['build_number'] = "0" + buildNum.toString()
+        } else {
+            versionProps['build_number'] = buildNum.toString()
+        }
+    }
+    versionProps.store(versionFile.newWriter(), null)
+    def versionFileDir = projectDir.getAbsolutePath() + File.separatorChar + 'src' + File.separatorChar + 'main' + File.separatorChar + 'java' + File.separatorChar + 'cn' + File.separatorChar + 'muyang' + File.separatorChar + 'Main.java';
+    println versionFileDir;
+    //读取旧的version字符串
+    def oldVersionStr = findOldVersionStr(versionFileDir);
+    println oldVersionStr;
+    //获取新的version字符串
+    def newVersionValue = getNewVersionValue();
+    //拼接为java的语句
+    def newVersionStr = "    public static final String VERSION = \"" + newVersionValue + "." + (buildNum < 10 ? "0" + buildNum : buildNum) + "\";"
+    println newVersionStr;
+    //重新写入到文件中
+    def updatedContent = new File(versionFileDir).getText('UTF-8').replaceAll(oldVersionStr, newVersionStr);
+    new File(versionFileDir).write(updatedContent, 'UTF-8')
+}
+//读取旧的version字符串
+
+def findOldVersionStr(path) {
+    def readerString = ""
+    new File(path).withReader('UTF-8') { reader ->
+        reader.eachLine {
+            //读取一行，如果发现有"VERSION"字符，说明是我们要修改的那一行。
+            if (it.contains("String VERSION")) {
+                //保存it到string，然后返回
+                readerString <<= it
+                return readerString
+            }
+        }
+        return readerString
+    }
+}
+
+//获取新的版本号
+def getNewVersionValue() {
+    //举例：用日期作为版本号
+    def date = new Date().format("yyyy.MMdd", TimeZone.getTimeZone("GMT+08:00"));
+    return date;
+}
+
+compileJava {
+    dependsOn updateVersion
+}
