@@ -1,0 +1,24 @@
+<qiriyou>
+    <targets>
+        <target>WINDOWS_X86_64</target>
+        <target>WINDOWS_AARCH64</target>
+        <target>MACOS_X86_64</target>
+        <target>MACOS_AARCH64</target>
+        <target>LINUX_X86_64</target>
+        <target>LINUX_AARCH64</target>
+    </targets>
+    <options>
+        <!--<expireDate>2022-10-22</expireDate>-->
+        <stringObf>true</stringObf>
+        <flowObf>false</flowObf>
+    </options>
+    <include>
+        <match className="cn.muyang.**" />
+    </include>
+    <exclude>
+        <match className="cn/muyang/library/**" />
+        <match className="org/**" />
+        <match className="com/**" />
+        <match className="oshi/**" />
+    </exclude>
+</qiriyou>
