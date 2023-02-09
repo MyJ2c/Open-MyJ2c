@@ -1,7 +1,13 @@
 # OpenMYJ2C
 
+
+#### Open Source Information
+This open source version is the official open source, open source the old version, we will continue to update the paid version! The open source version can be compiled and used directly.
+
 #### 介绍
 OpenMYJ2C将编译的Java的Class字节码转换为C语言代码。交叉编译（您不用自己配置编译环境，OpenMYJ2C自动完成）可以生成Windows，Linux，Mac系统X86，ARM平台的动态链接库文件后，通过Java Native Interface 重新链接到原始程序。在此过程结束时，包含原始方法的.class文件的字节码中不会保留原始方法的信息。 
+
+
 
 编译前
 ```
@@ -18,19 +24,6 @@ public class App {
 	public static native void main(String args[]);
 }
 ```
-
-#### 安装教程
-
-1.  下载最新发布版本 [点此下载](https://gitee.com/myj2c/OpenMYJ2C/releases)
-2.   **放到不含中文路径的目录中** 
-3.  使用JDK8以上版本
-
-#### 效果展示
-
-| 名称 | 原始代码 | OpenMYJ2C混淆 | 说明 |
-|----|------|---------|----|
-| SnakeGame.jar  | [SnakeGame 右键另存为](https://gitee.com/myj2c/OpenMYJ2C/raw/master/SnakeGame.jar) | [OpenMYJ2C混淆 右键另存为](https://gitee.com/myj2c/OpenMYJ2C/raw/master/SnakeGame-OpenMYJ2C.jar)| 一款贪吃蛇游戏 [GitHub](https://github.com/hexadeciman/Snake)|
-
 
 #### 使用说明
 
