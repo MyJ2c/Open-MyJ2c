@@ -1,5 +1,7 @@
 # OpenMYJ2C
 
+##The bases used in this obfuscation:
+[native-obfuscator](https://github.com/radioegor146/native-obfuscator)
 
 #### Open Source Information
 This open source version is the official open source, open source the old version, we will continue to update the paid version! The open source version can be compiled and used directly.
