@@ -1,6 +1,6 @@
 # OpenMYJ2C
 
-##The bases used in this obfuscation:
+## The bases used in this obfuscation:
 [native-obfuscator](https://github.com/radioegor146/native-obfuscator)
 
 #### Open Source Information
