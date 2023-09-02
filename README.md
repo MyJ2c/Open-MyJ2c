@@ -1,10 +1,12 @@
 # OpenMYJ2C
 
-## The bases used in this obfuscation:
-[native-obfuscator](https://github.com/radioegor146/native-obfuscator)
-
 #### Open Source Information
 This open source version is the official open source, open source the old version, we will continue to update the paid version! The open source version can be compiled and used directly.
+
+### The bases used in this obfuscation:
+[native-obfuscator](https://github.com/radioegor146/native-obfuscator)
+
+
 
 #### 介绍
 OpenMYJ2C将编译的Java的Class字节码转换为C语言代码。交叉编译（您不用自己配置编译环境，OpenMYJ2C自动完成）可以生成Windows，Linux，Mac系统X86，ARM平台的动态链接库文件后，通过Java Native Interface 重新链接到原始程序。在此过程结束时，包含原始方法的.class文件的字节码中不会保留原始方法的信息。 
